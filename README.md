@@ -1,13 +1,13 @@
 # mwc-bumblebee
 Magic Wheelchair - Bumblebee 
 
-Magic Wheelchair: magicwheelchair.org
+Magic Wheelchair: http://magicwheelchair.org
 
-The Maker Effect Foundation: themakereffect.org
+The Maker Effect Foundation: http://themakereffect.org
 
-MakerFX Makerspace: makerfx.org
+MakerFX Makerspace: http://makerfx.org
 
-ATMakers: atmakers.org
+ATMakers: http://atmakers.org
 
 Makers Hollow: https://www.instagram.com/makershollow/
 
