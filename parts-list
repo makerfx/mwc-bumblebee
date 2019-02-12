@@ -1,0 +1,24 @@
+Main Controller
+- Teensy 3.6: https://www.pjrc.com/store/teensy36.html (also available on amazon)
+- Teensy Audio board:
+- Breadboard Prototyping PCB (qty3):
+- Level Shifter IC: 
+- 
+- 12v->5v Voltage Regulator with screw terminals: https://smile.amazon.com/EPBOWPT-Converter-Regulator-Supply-Transformer/dp/B01M03288J/
+- 9 pin 2.8mm pitch connector (one per side): https://smile.amazon.com/gp/product/B07DB7X9R9/
+- Ground Loop isolator (for audio input): https://smile.amazon.com/gp/product/B01JUOWB2Q/
+- Boss Audio Amp & Speakers: https://www.amazon.com/BOSS-Audio-MCBK420B-Weatherproof-Applications/dp/B00T3QBL3M/
+
+
+
+Dashboard
+- Teensy 3.6: https://www.pjrc.com/store/teensy36.html (also available on amazon)
+- MicroSD card extension: https://smile.amazon.com/gp/product/B01D9JIUU0/
+
+
+Head
+- Adafruit 16 Neopixel Ring (qty2)
+- JST 3 pin connectors (one per ring on ring side, one per ring on cable side, in Y configuration)
+- 3 pin 2.8mm pitch connector: https://smile.amazon.com/gp/product/B07DB7X9R9/
+
+
