@@ -1,24 +1,29 @@
 Main Controller
-- Teensy 3.6: https://www.pjrc.com/store/teensy36.html (also available on amazon)
-- Teensy Audio board:
+- Teensy 3.6 ($30): https://www.pjrc.com/store/teensy36.html (also available on amazon)
+- Teensy Audio board ($14): https://www.pjrc.com/store/teensy3_audio.html
 - Breadboard Prototyping PCB (qty3):
 - Level Shifter IC: 
 - 
-- 12v->5v Voltage Regulator with screw terminals: https://smile.amazon.com/EPBOWPT-Converter-Regulator-Supply-Transformer/dp/B01M03288J/
-- 9 pin 2.8mm pitch connector (one per side): https://smile.amazon.com/gp/product/B07DB7X9R9/
-- Ground Loop isolator (for audio input): https://smile.amazon.com/gp/product/B01JUOWB2Q/
-- Boss Audio Amp & Speakers: https://www.amazon.com/BOSS-Audio-MCBK420B-Weatherproof-Applications/dp/B00T3QBL3M/
+- 12v->5v Voltage Regulator with screw terminals ($10): https://smile.amazon.com/EPBOWPT-Converter-Regulator-Supply-Transformer/dp/B01M03288J/
+- 9 pin 2.8mm pitch connector (one per side) (set $16 + crimpers $17): : https://smile.amazon.com/gp/product/B07DB7X9R9/
+- Ground Loop isolator (for audio input) ($8): https://smile.amazon.com/gp/product/B01JUOWB2Q/
+- Boss Audio Amp & Speakers ($58): https://www.amazon.com/BOSS-Audio-MCBK420B-Weatherproof-Applications/dp/B00T3QBL3M/
+- BlackWeb USB Presentation Remote ($22): https://www.walmart.com/ip/BlackWeb-2-4GHz-Wireless-Presenter-82-ft-Range/720596584
 
 
 
 Dashboard
 - Teensy 3.6: https://www.pjrc.com/store/teensy36.html (also available on amazon)
-- MicroSD card extension: https://smile.amazon.com/gp/product/B01D9JIUU0/
+- MicroSD card extension ($7): https://smile.amazon.com/gp/product/B01D9JIUU0/
 
 
 Head
-- Adafruit 16 Neopixel Ring (qty2)
+- Adafruit 16 Neopixel Ring (Qty 2, $14 each): https://smile.amazon.com/gp/product/B00KBXT9I0 
 - JST 3 pin connectors (one per ring on ring side, one per ring on cable side, in Y configuration)
-- 3 pin 2.8mm pitch connector: https://smile.amazon.com/gp/product/B07DB7X9R9/
+- 3 pin 2.8mm pitch connector (set $16 + crimpers $17): https://smile.amazon.com/gp/product/B07DB7X9R9/
 
+Headlights
+- MR16 5W LED Bulbs ($8 for 2): https://smile.amazon.com/gp/product/B07C2FXSSC/
+- MR16 LED Bulb bases ($6 for 5): https://smile.amazon.com/gp/product/B073FFBSJM
+- 24 Pixel Addressable LED Rings (WS2812) (Qty 2, $12 each): https://www.amazon.com/gp/product/B07CNFZC35
 
