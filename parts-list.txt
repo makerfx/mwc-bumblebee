@@ -14,11 +14,7 @@ Main Controller
 - 7 port Powered USB Hub: donated by Ian 
 - Main power switch: donated by someone
 - Reboot switch - momentary normally closed: donated by Harry
-
-General Cable & Connectors
-- LED extension cable: https://smile.amazon.com/gp/product/B07CWSXY7P/
-- 
-- 
+- LED extension cable - 18 gauge 4 conductor: https://smile.amazon.com/gp/product/B07CWSXY7P/
 
 MIDI Keyboard
 - Akai MPK Mini MKII ($99): https://www.amazon.com/gp/product/B00IJ6QAO2
