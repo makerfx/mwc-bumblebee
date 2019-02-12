@@ -2,6 +2,7 @@ Main Controller
 - Teensy 3.6 ($30): https://www.pjrc.com/store/teensy36.html (also available on amazon)
 - Teensy Audio board ($14): https://www.pjrc.com/store/teensy3_audio.html
 - Breadboard Prototyping PCB (QTY 3, $12 for 6): https://www.amazon.com/gp/product/B07DM3H7W2
+- Header pins for protoboards ($13 kit): https://smile.amazon.com/gp/product/B07CWSXY7P/
 - Level Shifter IC 74AHCT125 - Quad Level-Shifter 3V to 5V ($1.50): https://www.adafruit.com/product/1787  
 - TIP120 Transistors (QTY 5, $1 each): Purchased from Skycraft Parts & Surplus
 - 12v->5v Voltage Regulator with screw terminals ($10): https://smile.amazon.com/EPBOWPT-Converter-Regulator-Supply-Transformer/dp/B01M03288J/
@@ -14,6 +15,10 @@ Main Controller
 - Main power switch: donated by someone
 - Reboot switch - momentary normally closed: donated by Harry
 
+General Cable & Connectors
+- LED extension cable: https://smile.amazon.com/gp/product/B07CWSXY7P/
+- 
+- 
 
 MIDI Keyboard
 - Akai MPK Mini MKII ($99): https://www.amazon.com/gp/product/B00IJ6QAO2
