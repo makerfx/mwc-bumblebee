@@ -48,3 +48,6 @@ Headlights
 - 24 Pixel Addressable LED Rings (WS2812) (Qty 2, $12 each): https://www.amazon.com/gp/product/B07CNFZC35
 - Mirrored acrylic: https://www.amazon.com/gp/product/B01MXE417D
 
+Battery
+- 12v 12ah SLA battery from KidTrax vehicle (+Spare)
+- KidTrax Battery Charger $35 (https://www.amazon.com/Kaylison-Battery-Charger-Connector-Rideammales/dp/B07FZF5FLZ/)
