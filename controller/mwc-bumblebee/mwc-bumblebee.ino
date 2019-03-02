@@ -1044,8 +1044,8 @@ void actionVideoSelect (int video) {
   if (debugOptions[DEBUG_ACTION]) Serial.printf("actionVideoSelect(%d)\n", video);
   
   //send midi song select here
-  midi1.sendSongSelect(video);
-  midi2.sendSongSelect(video);
+  //midi1.sendSongSelect(video);
+  //midi2.sendSongSelect(video);
 }
 void actionFlare() {
   if (debugOptions[DEBUG_ACTION]) Serial.printf("actionFlare()\n");
