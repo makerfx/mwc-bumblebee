@@ -3,6 +3,7 @@
 // reference: Using USB MIDI - https://www.pjrc.com/teensy/td_midi.html
 // reference: 
 // IMPORTANT NOTE: 8.3 FILENAMES FOR WAV AUDIO FILES!
+// IMPORTANT NOTE: WAV 44100 STEREO 16BIT
 
 /*
  * Todo:
@@ -1018,7 +1019,7 @@ void actionChangeInstrument() {
 
     switch (curInstrument) {
       case 0: wavetable[i].setInstrument(standard_DRUMS); if (i==0) actionPlayWAV("DRUMS.WAV");   break; //only play audio first time through loop
-      case 1: wavetable[i].setInstrument(piano);          if (i==0) actionPlayWAV("HORN2.WAV");   break;
+      case 1: wavetable[i].setInstrument(piano);          if (i==0) actionPlayWAV("PIANO.WAV");   break;
       case 2: wavetable[i].setInstrument(distortiongt);   if (i==0) actionPlayWAV("GUITAR.WAV");  break;
       case 3: wavetable[i].setInstrument(trumpet);        if (i==0) actionPlayWAV("TRUMPET.WAV"); break;
       case 4: wavetable[i].setInstrument(timpani);        if (i==0) actionPlayWAV("TIMPANI.WAV"); break;
