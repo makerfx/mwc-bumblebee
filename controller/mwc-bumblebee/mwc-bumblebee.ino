@@ -102,6 +102,15 @@ AudioConnection          patchCord31(mxInR, 0, i2sOUT, 1);
 AudioControlSGTL5000     sgtl5000_1;     //xy=1206,940
 // GUItool: end automatically generated code
 
+/*
+ * PlayQueue - to avoid calling audio system during USB event handler
+ * Note that we only have one playSdWave object on Bumblebee, 
+ * so no need for array here as we did on tie-silencer
+ * 
+ */
+String playQueue;
+ 
+
 
 /*
  * MIDI Synth Includes & Globals
@@ -188,7 +197,7 @@ CRGB blingLEDS[BLING_NUM_LEDS];
 Metro showMetro = Metro(100); 
 Metro fftMetro = Metro(50); 
 Metro chaseMetro = Metro(20); 
-
+Metro playQueueMetro = Metro(50);
 
 #define SHOW_DEFAULT  0
 #define SHOW_FLARE    1
@@ -495,7 +504,14 @@ void loop() {
       } //end if
   } //end chaseMetro  
 
-
+  if (playQueueMetro.check() == 1) { // check if the metro has passed its interval
+    String fn = playQueue;
+    if (fn.length() >0) {
+      playQueue = "";
+      playWAV(fn); 
+    }
+  }
+  
   debugOptionsCheck();       
 }
 
@@ -1024,7 +1040,7 @@ void actionPlayRandomWAV() {
 
 //NOT IMPLEMENTED
 void actionPlayWAV(int filenum) {
- if (debugOptions[DEBUG_ACTION]) Serial.printf("actionPlayWAV() - %d\n", filenum);
+ if (debugOptions[DEBUG_ACTION]) Serial.printf("actionPlayWAV()- %d\n", filenum);
 
  //build filename
  //play wav file
@@ -1035,10 +1051,7 @@ void actionPlayWAV (char* filename) {
  //note: this function does not have the rate protection code to prevent button spamming locks
  if (debugOptions[DEBUG_ACTION]) Serial.printf("actionPlayWAV (char *)  - %s\n", filename);
 
- playFile(filename);
- // playSdWav1.play("HORN.WAV");
- //playFile("SDTEST2.WAV");
-
+ queueWAV(filename);
 }
 
 
@@ -1067,7 +1080,7 @@ void actionPlayHornWAV() {
   String fn = "HORN";
   fn = fn + i + ".WAV";
   
-  playFile(fn);
+  queueWAV(fn);
 }
 
 void actionVideoSelect (int video) {
@@ -1101,32 +1114,31 @@ void actionStop() {
 
 /*
  * Audio Playback
- * playFile - this plays a specific wav file
+ * playWAV - this plays a specific wav file
  * there is a "debounce" on this to prevent locking behavior
  * 
  */
 
- bool playFile (String fn) {
-  unsigned long curMillis = millis();
-  unsigned long playDelay = 200;
-  unsigned long testVal = (playDelay + lastPlayStart);
+ void playWAV (String fn) {
 
-  if (debugOptions[DEBUG_AUDIO]) Serial.printf("playFile(%s)\n", fn);
+  if (debugOptions[DEBUG_AUDIO]) Serial.printf("playWAV(%s)\n", fn.c_str());
+  
+  playSdWav1.play(fn.c_str());
+  
+} //end playWAV
 
-  //IF NOT PLAYING OR ENOUGH TIME HAS ELAPSED
-  if (( playSdWav1.isPlaying() == false) || (curMillis > testVal) ) {
-        lastPlayStart = millis();
-        playSdWav1.play(fn.c_str());
-        delay(10); // wait for library to parse WAV info
-          //NOT SURE THIS DELAY WORKS SINCE THREADED CALLS...
-        return true;
-  } //end if
-  else {
-    //Serial.println("Ignoring Action due to Play Delay.");
-    return false;
-  }
-} //end playFile
+/*
+ * Audio: queueWAV(filename)
+ *        puts a filename into the queue to be picked up
+ *        by the queue metro and played
+ *        this avoids locking behavior
+ *        
+ */
 
+void queueWAV(String fn) {
+  playQueue = fn;
+  if (debugOptions[DEBUG_AUDIO]) Serial.printf("queueWAV(%s)\n", fn);
+}
 
 /*
  * Audio Playback
@@ -1143,6 +1155,7 @@ int playRandomVoiceFile() {
     fn = fn + i + ".wav";
 
     if (debugOptions[DEBUG_AUDIO]) Serial.printf("playRandomVoiceFile() - %s\n", fn.c_str());
+    queueWAV(fn);
     
     return i;
 }
@@ -1163,7 +1176,7 @@ int playRandomSoundFile() {
     fn = fn + i + ".wav";
 
     if (debugOptions[DEBUG_AUDIO]) Serial.printf("playRandomSoundFile() - %s\n", fn.c_str());
-    
+    queueWAV(fn);
     return i;
 }
 
