@@ -12,6 +12,22 @@
  * set actionStop to mode stop
  */
 
+bool debugOptions[10] = {0, 0, 0, 1, 0, 0, 0, 0, 0, 0};   //change default here, helpful for startup debugging
+
+                                                        
+const char* debugOptionsText[10] =  {"", "Input","Audio", "Action", "Peak Audio", "FFT Audio",
+                                "Animation","Animation RGB Dump"};
+                                
+#define DEBUG_INPUT               1  //input functions 
+#define DEBUG_AUDIO               2  //audio functions 
+#define DEBUG_ACTION              3  //action functions 
+#define DEBUG_PEAK                4  //Peak Audio functions
+#define DEBUG_FFT                 5  //Peak Audio functions  
+#define DEBUG_ANIMATION           6  //Animation functions   //THIS MAY SLOW ANIMATION                            
+#define DEBUG_ANIMATION_RGB       7  //Show Full Animation Frame RGB 
+                                     //Does not require DEBUG_ANIMATION to be on
+                                     //THIS MAY SLOW ANIMATION
+                                     
 
 
 /*
@@ -192,6 +208,10 @@ Metro chaseMetro = Metro(20);
 #define MODE_CHASE2         6
 #define MODE_CHASE3         7
 
+const char* modeText[NUM_MODES] =  {"Off", "FFT Split","FFT Straight", "Peak Split", "Peak Straight", "Chase 1",
+                                "Chase 2","Chase 3"};
+
+
 int currentChasePosition = 0;
 int lastChasePosHL = 0;
 int lastChasePosEYE = 0;
@@ -212,6 +232,9 @@ int currentMode = DEFAULT_MODE; //modes are what is happening during the default
 #define H_AQUA      128
 #define H_GREEN     171
 #define H_YELLOW    213
+
+const char* colorText[NUM_MODE_COLORS] =  {"Red", "Pink","Purple", "Aqua", "Green", "Yellow"};
+
 
 #define DEFAULT_MODE_COLOR 4
 
@@ -322,10 +345,16 @@ int ActionMap[][3] = {
 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  delay(100);
+
+  Serial.println("Setup Started.");
+
+  //setup audio system
   AudioMemory(128);
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.9);
+  
   SPI.setMOSI(SDCARD_MOSI_PIN);
   SPI.setSCK(SDCARD_SCK_PIN);
   if (!(SD.begin(SDCARD_CS_PIN))) {
@@ -407,8 +436,6 @@ void setup() {
   analogWrite(GFX_BLUE_PIN, 0);
   
 
-  
-
   //Rings like BRG space to be the same as the RGB strip
   //TODO: NEED TO CALIBRATE OTHER RINGS
   LEDS.addLeds<WS2812SERIAL,EYE_DATA_PIN,  BRG>(eyeLEDS,   EYE_NUM_LEDS);
@@ -426,11 +453,12 @@ void setup() {
   blingLEDS[0] = CRGB(255,255,255);
   FastLED.show();
   delay(3000);
-  
 
-  sgtl5000_1.volume(.8);
-  
   delay(1000);
+
+  Serial.println("Setup Complete.");
+  printDebugOptions();
+  
 }
 
 void loop() {
@@ -465,7 +493,10 @@ void loop() {
                 break;   
         } //end switch
       } //end if
-  } //end chaseMetro      
+  } //end chaseMetro  
+
+
+  debugOptionsCheck();       
 }
 
 
@@ -475,7 +506,7 @@ void updateModeShow() {
 
   case SHOW_FLARE:
     //do stuff
-    Serial.println("SHOW:FLARE");
+    //Serial.println("SHOW:FLARE");
     
     FastLED.setBrightness (FLARE_BRIGHTNESS);
     fill_solid(hlLEDS,HL_NUM_LEDS, FLARE_COLOR);
@@ -508,7 +539,7 @@ void updateModeShow() {
     break;
   case SHOW_SPEAKING:
     //do stuff
-    Serial.println("FLARE");
+    //Serial.println("FLARE");
     break;
   case SHOW_HONKING:
     //do stuff
@@ -553,7 +584,9 @@ void action (int src, int key, int data) {
 
 void OnPress(int key)
 {
-  Serial.print("key: "); Serial.println(key);
+  if (debugOptions[DEBUG_INPUT]) {
+    Serial.printf("key: %d\n", key);
+  }
   actionFlare();
   mapAction(SOURCE_KEY, key, 0);
     
@@ -561,13 +594,9 @@ void OnPress(int key)
 
 void OnNoteOn(byte channel, byte note, byte velocity)
 {
-  Serial.print("Note On, ch=");
-  Serial.print(channel);
-  Serial.print(", note=");
-  Serial.print(note);
-  Serial.print(", velocity=");
-  Serial.print(velocity);
-  Serial.println();
+   if (debugOptions[DEBUG_INPUT]) {
+     Serial.printf("Note on, ch=%d, note=%d, velocity=%d\n",channel, note, velocity);
+   }
 
   if (velocity < MIN_NOTE_VELOCITY) velocity = MIN_NOTE_VELOCITY; 
 
@@ -586,13 +615,9 @@ void OnNoteOn(byte channel, byte note, byte velocity)
 
 void OnNoteOff(byte channel, byte note, byte velocity)
 {
-  Serial.print("Note Off, ch=");
-  Serial.print(channel);
-  Serial.print(", note=");
-  Serial.print(note);
-  //Serial.print(", velocity=");
-  //Serial.print(velocity);
-  Serial.println();
+  if (debugOptions[DEBUG_INPUT]) {
+     Serial.printf("Note off, ch=%d, note=%d, velocity=%d\n",channel, note, velocity);    
+  }
 
   int wavetable_id = findVoice(channel, note);
   if (wavetable_id != TOTAL_VOICES)
@@ -601,13 +626,10 @@ void OnNoteOff(byte channel, byte note, byte velocity)
 
 void OnControlChange(byte channel, byte control, byte value)
 {
-  Serial.print("Control Change, ch=");
-  Serial.print(channel);
-  Serial.print(", control=");
-  Serial.print(control);
-  Serial.print(", value=");
-  Serial.print(value);
-  Serial.println();
+ if (debugOptions[DEBUG_INPUT]) {
+     Serial.printf("Control Change, ch=%d, control=%d, value=%d\n",channel, control, value);    
+  }
+
 }
 
 
@@ -664,11 +686,11 @@ void updateChaseLEDs(CRGB leds[], int numleds, int pos) {
     Serial.println ("ERROR: updateChase() pos > numleds!");
   }
   
-  
-  
   if (currentMode == MODE_CHASE1) {
       int l = pos;
-      //Serial.print("Chase1("); Serial.print(pos); Serial.print("):"); Serial.println(l);
+      if (debugOptions[DEBUG_ANIMATION]) {
+        Serial.printf("Chase1(%d):%d)\n", pos, l);
+        }
       leds[l] = CHSV(modeColorHueVals[currentModeColor], 255, 255);
       
   }
@@ -722,15 +744,19 @@ void updatePeak() {
     
      float peak = peakIn.read();
 
-      /* debug print for peak 
-     Serial.print(peak);
-     int monoPeak = peak * 30;
-      Serial.print("|");
-      for (int cnt=0; cnt<monoPeak; cnt++) {
-        Serial.print(">");
-      }
-      Serial.println();
-    */
+     if (debugOptions[DEBUG_PEAK]) {
+       if (peak > 0.01) {
+         Serial.print(peak);
+         int monoPeak = peak * 30;
+         Serial.print("|");
+         for (int cnt=0; cnt<monoPeak; cnt++) {
+            Serial.print(">");
+         }
+         Serial.println();
+       }
+    }
+     
+  
     FastLED.clear();
     updatePeakLEDs(hlLEDS,    HL_NUM_LEDS,    peak); 
     updatePeakLEDs(eyeLEDS,   EYE_NUM_LEDS,   peak); 
@@ -865,14 +891,9 @@ void updateFFTLEDs(CRGB leds[], int numleds) {
       if (fft_brt > 255) fft_brt = 255; //max val
       if (fft_brt < FFT_MIN) fft_brt = 0; //min val
 
-      /*
-      Serial.print(b);
-      Serial.print("->(");
-      Serial.print(bin_color);
-      Serial.print(",");
-      Serial.print(fft_brt);
-      Serial.print(")..");
-*/
+      if (debugOptions[DEBUG_FFT]) {
+        Serial.printf("%d->(%d,%d)..\n", b, bin_color, fft_brt);
+      }
       
       if (b==0) {                                       //center LED
         leds[bins] = CHSV(bin_color, 255, fft_brt); 
@@ -945,37 +966,37 @@ void processAction (int action, int src, int key, int data) {
 
 
 void actionChangeColor() {
- Serial.print("actionChangeColor - Current:");  Serial.print(currentModeColor);
-
+  
  currentModeColor++; 
  if (currentModeColor >= NUM_MODE_COLORS) currentModeColor = 0;
- 
- Serial.print(" New:"); Serial.println(currentModeColor);
+
+ if (debugOptions[DEBUG_ACTION]) Serial.printf("actionChangeColor(%s)\n", colorText[currentModeColor]);
+
 }
 
 void actionChangeSpeed() {
- Serial.println("actionChangeSpeed"); 
+ if (debugOptions[DEBUG_ACTION])  Serial.println("actionChangeSpeed"); 
  //update speed setting
 }
 
 void actionChangeMode() {
- Serial.print("actionChangeMode - Current:");  Serial.print(currentMode);
-
+ 
  currentMode++; 
  if (currentMode >= NUM_MODES) currentMode = 0;
 
  FastLED.clear();
  FastLED.show();
- 
- Serial.print(" New:"); Serial.println(currentMode);
+
+ if (debugOptions[DEBUG_ACTION]) Serial.printf("actionChangeMode(%s)\n", modeText[currentMode]);
+
 }
 
 void actionChangeInstrument() {
- Serial.println("actionChangeInstrument"); 
+ if (debugOptions[DEBUG_ACTION]) Serial.println("actionChangeInstrument"); 
 
  if (curInstrument > (NUM_INSTRUMENTS-1)) curInstrument=0;
 
-  Serial.print("setInstrument:"); Serial.println(curInstrument);
+  if (debugOptions[DEBUG_ACTION]) Serial.printf("setInstrument:%d\n", curInstrument);
   
   for (int i = 0; i < TOTAL_VOICES; ++i) {
 
@@ -996,15 +1017,15 @@ void actionChangeInstrument() {
 
 
 void actionPlayRandomWAV() {
- Serial.println("actionPlayRandomWAV");
+ if (debugOptions[DEBUG_ACTION]) Serial.println("actionPlayRandomWAV()");
  playRandomVoiceFile();
 }
 
 
 //NOT IMPLEMENTED
 void actionPlayWAV(int filenum) {
- Serial.print("actionPlayWAV - ");
- Serial.println(filenum);
+ if (debugOptions[DEBUG_ACTION]) Serial.printf("actionPlayWAV() - %d\n", filenum);
+
  //build filename
  //play wav file
 }
@@ -1012,8 +1033,8 @@ void actionPlayWAV(int filenum) {
 
 void actionPlayWAV (char* filename) {
  //note: this function does not have the rate protection code to prevent button spamming locks
- Serial.print("actionPlayWAV - ");
- Serial.println(filename);
+ if (debugOptions[DEBUG_ACTION]) Serial.printf("actionPlayWAV (char *)  - %s\n", filename);
+
  playFile(filename);
  // playSdWav1.play("HORN.WAV");
  //playFile("SDTEST2.WAV");
@@ -1023,19 +1044,24 @@ void actionPlayWAV (char* filename) {
 
 //needed for string constants in the processAction function
 void actionPlayWAV (char const* filename) {
+  if (debugOptions[DEBUG_ACTION]) Serial.printf("actionPlayWAV (char const*)  - %s\n", (char*) filename);
+  
   actionPlayWAV((char*) filename); //cast to char* to call the other function
 }
 
 void actionPlayNote(int note, int velocity) {
-  Serial.print("actionPlayNote - Note: ");
-  Serial.print(note);
-  Serial.print(", Velocity: ");
-  Serial.println(velocity);
+  
+  if (debugOptions[DEBUG_ACTION]) {
+    Serial.printf("actionPlayNote - Note:%d, Velocity: %d\n", note, velocity);
+  }
 
   //play note
+ 
 }
 
 void actionPlayHornWAV() {
+  if (debugOptions[DEBUG_ACTION]) Serial.printf("actionPlayHornWAV()\n");
+  
   int i = random(1, NUM_HORN_WAVS + 1); //random returns between min and (max-1);
     //generate filename
   String fn = "HORN";
@@ -1045,18 +1071,20 @@ void actionPlayHornWAV() {
 }
 
 void actionVideoSelect (int video) {
+  if (debugOptions[DEBUG_ACTION]) Serial.printf("actionVideoSelect(%d)\n", video);
+  
   //send midi song select here
   //midi1.sendSongSelect(video);
   //midi2.sendSongSelect(video);
 }
 void actionFlare() {
-  Serial.println("actionFlare");
+  if (debugOptions[DEBUG_ACTION]) Serial.printf("actionFlare()\n");
   currentShow = SHOW_FLARE;
   //should i just move the blocking version of the code here?
 }
 
 void actionHeadlightToggle() {
-    Serial.println("actionHeadlightToggle");
+  if (debugOptions[DEBUG_ACTION]) Serial.printf("actionHeadlightToggle()\n");
     
     leftHeadlightStatus = !leftHeadlightStatus;
     rightHeadlightStatus = !rightHeadlightStatus;
@@ -1064,7 +1092,7 @@ void actionHeadlightToggle() {
 }
 
 void actionStop() {
-  Serial.println("actionStop");
+  if (debugOptions[DEBUG_ACTION]) Serial.printf("actionStop()\n");
   currentMode = MODE_OFF;
   
   //set mode to all LEDs off?  
@@ -1083,11 +1111,7 @@ void actionStop() {
   unsigned long playDelay = 200;
   unsigned long testVal = (playDelay + lastPlayStart);
 
-  Serial.print ("playFile-");
-  Serial.println (fn);
-  //Serial.println  (millis());
-  //Serial.println (lastPlayStart);
-  //Serial.println (testVal);
+  if (debugOptions[DEBUG_AUDIO]) Serial.printf("playFile(%s)\n", fn);
 
   //IF NOT PLAYING OR ENOUGH TIME HAS ELAPSED
   if (( playSdWav1.isPlaying() == false) || (curMillis > testVal) ) {
@@ -1118,10 +1142,7 @@ int playRandomVoiceFile() {
     String fn = "/bb-wavs/bb";
     fn = fn + i + ".wav";
 
-     if (playFile(fn)) {
-      Serial.print("playRandomVoiceFile: ");
-      Serial.println(fn);
-     }
+    if (debugOptions[DEBUG_AUDIO]) Serial.printf("playRandomVoiceFile() - %s\n", fn.c_str());
     
     return i;
 }
@@ -1141,10 +1162,7 @@ int playRandomSoundFile() {
     String fn = "/bb-wavs/bbs";
     fn = fn + i + ".wav";
 
-    if (playFile(fn)) {
-      Serial.print("playRandomSoundFile: ");
-      Serial.println(fn);
-     }
+    if (debugOptions[DEBUG_AUDIO]) Serial.printf("playRandomSoundFile() - %s\n", fn.c_str());
     
     return i;
 }
@@ -1231,3 +1249,69 @@ void freeVoices() {
       voices[nonfree_voices] = temp;
     }
 }
+
+
+/*
+ * debugOptionsCheck() - this function checks the Serial input and
+ *                       changes debug options as well as emulates some 
+ *                       button presses
+ *                       
+ */
+void debugOptionsCheck() {
+  int incomingByte = 0;
+  
+  if (Serial.available() > 0) {
+      // read the incoming byte:
+      incomingByte = Serial.read();
+      int option;
+      
+      switch (incomingByte) {
+          case '0':                         //turn all options off
+            for (int o = 1; o<10; o++) {    //we dont use zero
+              debugOptions[o] = 0;
+            }
+            Serial.println ("All debug options turned OFF");
+            break;
+            
+          case '1' ... '9': 
+            option = incomingByte - '0';
+            debugOptions[option] = !debugOptions[option]; 
+            //Serial.printf("Debug option %d is now %s\n", option, debugOptions[option]?"ON":"OFF");
+            break;
+
+          //remove, comment or alter these cases if there are no hardware buttons
+          //case 'q': mapAction(SOURCE_BUTTON, 1, 0); break;
+          //case 'w': mapAction(SOURCE_BUTTON, 2, 0); break;
+          //case 'e': mapAction(SOURCE_BUTTON, 3, 0); break;
+          //case 'r': mapAction(SOURCE_BUTTON, 4, 0); break;
+          }
+         
+         printDebugOptions();
+          
+      }
+       
+}
+
+/*
+ * printDebugOptions() - this function outputs a debug option list with
+ *                       with current status, and provides some input 
+ *                       instructions
+ *  
+ */
+void printDebugOptions() {
+  Serial.println("\nDebug Options Status");
+  Serial.println("Use serial input keys 1 through 9 to change debug options");
+  
+  //remove, comment or alter this line if there are no hardware buttons
+  Serial.println("Use serial input keys QWER to emulate buttons 1 through 4");
+  
+  for (int o=1; o<10; o++) {    //we don't use zero
+    {
+      if (debugOptionsText[o]) //don't print undefined options
+        Serial.printf("   Option %d = %s %s\n", o, debugOptions[o]?"ON: ":"OFF:", debugOptionsText[o]);
+    }
+  }
+  Serial.println("\n");       //a little extra padding in the output
+}
+ 
+ 
