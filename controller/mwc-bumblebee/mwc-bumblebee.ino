@@ -242,7 +242,7 @@ int currentMode = DEFAULT_MODE; //modes are what is happening during the default
 #define H_GREEN     171
 #define H_YELLOW    213
 
-const char* colorText[NUM_MODE_COLORS] =  {"Red", "Pink","Purple", "Aqua", "Green", "Yellow"};
+const char* colorText[NUM_MODE_COLORS] =  {"Red", "Pink","Aqua", "Green", "Blue", "Yellow"};
 
 
 #define DEFAULT_MODE_COLOR 4
@@ -856,8 +856,8 @@ void updateFFT() {
       rightHeadlightBrightness(255);
     }
     else {
-      leftHeadlightBrightness(0); 
-      rightHeadlightBrightness(0);
+      if (!leftHeadlightStatus) leftHeadlightBrightness(0); 
+      if (!rightHeadlightStatus) rightHeadlightBrightness(0);
     }
     
     }
