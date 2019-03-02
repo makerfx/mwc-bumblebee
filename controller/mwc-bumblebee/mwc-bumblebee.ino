@@ -375,7 +375,7 @@ void setup() {
   }
 
   //SYNTH Setup
-  actionChangeInstrument(); //setup instrument
+  actionChangeInstrument(false); //setup instrument
   
 
   //seed random function
@@ -966,7 +966,7 @@ void processAction (int action, int src, int key, int data) {
     case ACTION_CHANGE_COLOR:       actionChangeColor(); break;
     case ACTION_CHANGE_SPEED:       actionChangeSpeed(); break;
     case ACTION_CHANGE_MODE:        actionChangeMode(); break;
-    case ACTION_CHANGE_INSTRUMENT:  curInstrument++; actionChangeInstrument(); break;
+    case ACTION_CHANGE_INSTRUMENT:  curInstrument++; actionChangeInstrument(true); break;
     case ACTION_PLAY_NOTE:          actionPlayNote(key, data); break;
     case ACTION_FLARE:              actionFlare(); break;
     case ACTION_HEADLIGHT_TOGGLE:   actionHeadlightToggle(); break;
@@ -1008,7 +1008,7 @@ void actionChangeMode() {
 
 }
 
-void actionChangeInstrument() {
+void actionChangeInstrument(bool announce) {
  if (debugOptions[DEBUG_ACTION]) Serial.println("actionChangeInstrument"); 
 
  if (curInstrument > (NUM_INSTRUMENTS-1)) curInstrument=0;
@@ -1018,11 +1018,11 @@ void actionChangeInstrument() {
   for (int i = 0; i < TOTAL_VOICES; ++i) {
 
     switch (curInstrument) {
-      case 0: wavetable[i].setInstrument(standard_DRUMS); if (i==0) actionPlayWAV("DRUMS.WAV");   break; //only play audio first time through loop
-      case 1: wavetable[i].setInstrument(piano);          if (i==0) actionPlayWAV("PIANO.WAV");   break;
-      case 2: wavetable[i].setInstrument(distortiongt);   if (i==0) actionPlayWAV("GUITAR.WAV");  break;
-      case 3: wavetable[i].setInstrument(trumpet);        if (i==0) actionPlayWAV("TRUMPET.WAV"); break;
-      case 4: wavetable[i].setInstrument(timpani);        if (i==0) actionPlayWAV("TIMPANI.WAV"); break;
+      case 0: wavetable[i].setInstrument(standard_DRUMS); if (i==0 && announce) actionPlayWAV("DRUMS.WAV");   break; //only play audio first time through loop
+      case 1: wavetable[i].setInstrument(piano);          if (i==0 && announce) actionPlayWAV("PIANO.WAV");   break;
+      case 2: wavetable[i].setInstrument(distortiongt);   if (i==0 && announce) actionPlayWAV("GUITAR.WAV");  break;
+      case 3: wavetable[i].setInstrument(trumpet);        if (i==0 && announce) actionPlayWAV("TRUMPET.WAV"); break;
+      case 4: wavetable[i].setInstrument(timpani);        if (i==0 && announce) actionPlayWAV("TIMPANI.WAV"); break;
   
     }  
 
