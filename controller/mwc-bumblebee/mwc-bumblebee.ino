@@ -1,17 +1,9 @@
 // Magic Wheelchair - Bumblebee 
 //
 // reference: Using USB MIDI - https://www.pjrc.com/teensy/td_midi.html
-// reference: 
 // IMPORTANT NOTE: 8.3 FILENAMES FOR WAV AUDIO FILES!
 // IMPORTANT NOTE: WAV 44100 STEREO 16BIT
 
-/*
- * Todo:
- * 
- * Send MIDI Song Select to dashboard
- * Fix color mapping!
- * set actionStop to mode stop
- */
 
 bool debugOptions[10] = {0, 0, 0, 1, 0, 0, 0, 0, 0, 0};   //change default here, helpful for startup debugging
 
@@ -261,16 +253,9 @@ int rightHeadlightStatus = 1;
 
 USBHost myusb;
 USBHub hub1(myusb);
-//USBHub hub2(myusb);
-//USBHub hub3(myusb);
 KeyboardController keyboard1(myusb);
-//KeyboardController keyboard2(myusb);
 MIDIDevice midi1(myusb);
 MIDIDevice midi2(myusb);
-//USBHIDParser hid1(myusb);
-
-//USBDriver *drivers[] = {&hub1, &keyboard1, midi1, &joystick1, &hid1, &hid2, &hid3, &hid4, &hid5};
-//#define CNT_DEVICES (sizeof(drivers)/sizeof(drivers[0]))
 
 // this is for wav file playback to reduce locking
 unsigned long lastPlayStart = 0;
@@ -302,7 +287,7 @@ int curInstrument = 0;
 #define ACTION_PLAY_WAV_OPTIMUS       13
 #define ACTION_PLAY_WAV_HORN          14
 
-#define ACTION_PLAY_NOTE              20
+//#define ACTION_PLAY_NOTE              20
 
 #define ACTION_FLARE                  30
 #define ACTION_HEADLIGHT_TOGGLE       31
@@ -583,21 +568,6 @@ void updateModeShow() {
   FastLED.show();
 }
 
-/*
-//TODO: IS THIS CALLED? Looks like it was replaced by mapAction()
-void action (int src, int key, int data) {
-  int actionNum = ActionMap[src][key];
-  Serial.print("action(src=");
-  Serial.print(src);
-  Serial.print(",key=");
-  Serial.print(key);
-  Serial.print(",data=");
-  Serial.print(data);
-  Serial.print(") = ");
-  Serial.println(actionNum);
-  
-}
-*/
 
 void OnPress(int key)
 {
@@ -925,9 +895,6 @@ void updateFFTLEDs(CRGB leds[], int numleds) {
  
     }//end if split
     
-
-
-
 }
 
 
@@ -967,7 +934,7 @@ void processAction (int action, int src, int key, int data) {
     case ACTION_CHANGE_SPEED:       actionChangeSpeed(); break;
     case ACTION_CHANGE_MODE:        actionChangeMode(); break;
     case ACTION_CHANGE_INSTRUMENT:  curInstrument++; actionChangeInstrument(true); break;
-    case ACTION_PLAY_NOTE:          actionPlayNote(key, data); break;
+    //case ACTION_PLAY_NOTE:          actionPlayNote(key, data); break;
     case ACTION_FLARE:              actionFlare(); break;
     case ACTION_HEADLIGHT_TOGGLE:   actionHeadlightToggle(); break;
     
@@ -1063,15 +1030,6 @@ void actionPlayWAV (char const* filename) {
   actionPlayWAV((char*) filename); //cast to char* to call the other function
 }
 
-void actionPlayNote(int note, int velocity) {
-  
-  if (debugOptions[DEBUG_ACTION]) {
-    Serial.printf("actionPlayNote - Note:%d, Velocity: %d\n", note, velocity);
-  }
-
-  //play note
- 
-}
 
 void actionPlayHornWAV() {
   if (debugOptions[DEBUG_ACTION]) Serial.printf("actionPlayHornWAV()\n");
@@ -1088,8 +1046,8 @@ void actionVideoSelect (int video) {
   if (debugOptions[DEBUG_ACTION]) Serial.printf("actionVideoSelect(%d)\n", video);
   
   //send midi song select here
-  //midi1.sendSongSelect(video);
-  //midi2.sendSongSelect(video);
+  midi1.sendSongSelect(video);
+  midi2.sendSongSelect(video);
 }
 void actionFlare() {
   if (debugOptions[DEBUG_ACTION]) Serial.printf("actionFlare()\n");
