@@ -409,7 +409,7 @@ void setup() {
   pinMode(GFX_GREEN_PIN, OUTPUT);
   pinMode(GFX_BLUE_PIN, OUTPUT);
 
-  int testDelay = 500;
+  int testDelay = 100;
   analogWrite(HL_SPOT_LEFT_PIN, 255);
   delay(testDelay);
   analogWrite(HL_SPOT_LEFT_PIN, 0);
@@ -447,10 +447,8 @@ void setup() {
   hlLEDS[0] = CRGB(255,255,255);
   blingLEDS[0] = CRGB(255,255,255);
   FastLED.show();
-  delay(3000);
-
   delay(1000);
-
+  
   Serial.println("Setup Complete.");
   printDebugOptions();
   
