@@ -69,9 +69,9 @@ AudioConnection          patchCord5(wavetable[1], 0, mxWave, 1);
 AudioConnection          patchCord7(wavetable[2], 0, mxWave, 2);
 AudioConnection          patchCord9(playSdWav1, 0, mxInL, 0);
 AudioConnection          patchCord10(playSdWav1, 1, mxInR, 0);
-AudioConnection          patchCord11(i2sIN, 0, mxFFT, 0);
+//AudioConnection          patchCord11(i2sIN, 0, mxFFT, 0); //this was duplicate
 AudioConnection          patchCord12(i2sIN, 0, mxInL, 2);
-AudioConnection          patchCord13(i2sIN, 1, mxFFT, 1);
+//AudioConnection          patchCord13(i2sIN, 1, mxFFT, 1); //this was duplicate
 AudioConnection          patchCord14(i2sIN, 1, mxInR, 2);
 AudioConnection          patchCord15(mxWave, 0, mxInL, 1);
 AudioConnection          patchCord16(mxWave, 0, mxInR, 1);
@@ -191,6 +191,7 @@ Metro showMetro = Metro(100);
 Metro fftMetro = Metro(50); 
 Metro chaseMetro = Metro(20); 
 Metro playQueueMetro = Metro(50);
+
 
 #define SHOW_DEFAULT  0
 #define SHOW_FLARE    1
@@ -392,8 +393,8 @@ void setup() {
   //mxOutL.gain(1, 0.0); //granular
   //mxOutR.gain(1, 0.0); //granular
 
-  mxInL.gain(0, .3); //sdwav
-  mxInR.gain(0, .3); //sdwav
+  mxInL.gain(0, .5); //sdwav //the external input is lower, so this is set down to compensate
+  mxInR.gain(0, .5); //sdwav
   mxInL.gain(1, 1); //wavetable
   mxInR.gain(1, 1); //wavetable
   mxInL.gain(2, LINE_IN_MONITOR); //i2s in
@@ -493,6 +494,8 @@ void loop() {
   if (playQueueMetro.check() == 1) { // check if the metro has passed its interval
     String fn = playQueue;
     if (fn.length() >0) {
+      //decrease audio in level during playback
+      
       playQueue = "";
       playWAV(fn); 
     }
