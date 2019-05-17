@@ -38,62 +38,44 @@ const char* debugOptionsText[10] =  {"", "Input","Audio", "Action", "Peak Audio"
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
-
-AudioSynthWavetable      wavetable[TOTAL_VOICES];     
-//AudioSynthWavetable      wavetable4;     //xy=790,949
-//AudioSynthWavetable      wavetable1;     //xy=792,806
-//AudioSynthWavetable      wavetable2;     //xy=792,854
-//AudioSynthWavetable      wavetable3;     //xy=792,899
+ 
 
 // GUItool: begin automatically generated code
-
-AudioPlaySdWav           playSdWav1;     //xy=997,747
-AudioInputI2S            i2sIN;          //xy=1007,603
-AudioMixer4              mxWave;        //xy=1015,834
-//AudioSynthSimpleDrum     drum1;          //xy=1023,1037
-AudioMixer4              mxFFT;          //xy=1203,615
-AudioMixer4              mxInL;         //xy=1210,759
-AudioMixer4              mxInR;         //xy=1211,837
-AudioAnalyzePeak         peakIn;         //xy=1374,635
-AudioAnalyzeFFT1024      fft1024_1;      //xy=1386,580
-//AudioEffectGranular      granular1;      //xy=1414.0000305175781,777.285701751709
-//AudioEffectGranular      granular2;      //xy=1417.0000114440918,878.1428241729736
-//AudioMixer4              mxOutL;         //xy=1595.7143478393555,732.8571281433105
-//AudioMixer4              mxOutR;         //xy=1601.4286308288574,855.7142906188965
-//AudioAnalyzePeak         peakOutL;       //xy=1778.8572044372559,660.9999713897705
-//AudioAnalyzePeak         peakOutR;       //xy=1784.7142028808594,917.0000457763672
-AudioOutputI2S           i2sOUT;         //xy=1812.8572006225586,787.5714073181152
-AudioConnection          patchCord1(wavetable[3], 0, mxWave, 3);
-AudioConnection          patchCord3(wavetable[0], 0, mxWave, 0);
-AudioConnection          patchCord5(wavetable[1], 0, mxWave, 1);
-AudioConnection          patchCord7(wavetable[2], 0, mxWave, 2);
-AudioConnection          patchCord9(playSdWav1, 0, mxInL, 0);
-AudioConnection          patchCord10(playSdWav1, 1, mxInR, 0);
-//AudioConnection          patchCord11(i2sIN, 0, mxFFT, 0); //this was duplicate
-AudioConnection          patchCord12(i2sIN, 0, mxInL, 2);
-//AudioConnection          patchCord13(i2sIN, 1, mxFFT, 1); //this was duplicate
-AudioConnection          patchCord14(i2sIN, 1, mxInR, 2);
-AudioConnection          patchCord15(mxWave, 0, mxInL, 1);
-AudioConnection          patchCord16(mxWave, 0, mxInR, 1);
-
-//AudioConnection          patchCord17(drum1, 0, mxInL, 3);
-//AudioConnection          patchCord18(drum1, 0, mxInR, 3);
-AudioConnection          patchCord19(mxFFT, fft1024_1);
-AudioConnection          patchCord20(mxFFT, peakIn);
-AudioConnection          patchCord21(mxInL, 0, mxFFT, 2);
-//AudioConnection          patchCord22(mxInL, granular1);
-//AudioConnection          patchCord23(mxInL, 0, mxOutL, 0);
-AudioConnection          patchCord24(mxInR, 0, mxFFT, 3);
-//AudioConnection          patchCord25(mxInR, granular2);
-//AudioConnection          patchCord26(mxInR, 0, mxOutR, 0);
-//AudioConnection          patchCord27(granular1, 0, mxOutL, 1);
-//AudioConnection          patchCord28(granular2, 0, mxOutR, 1);
-AudioConnection          patchCord29(mxInL, 0, i2sOUT, 0);
-//AudioConnection          patchCord30(mxOutL, peakOutL);
-AudioConnection          patchCord31(mxInR, 0, i2sOUT, 1);
-//AudioConnection          patchCord32(mxOutR, peakOutR);
-AudioControlSGTL5000     sgtl5000_1;     //xy=1206,940
+AudioSynthWavetable      wavetable[TOTAL_VOICES]; //xy=137.5,87.0001859664917
+AudioPlaySdWav           playSdWav1;     //xy=180.3334197998047,239.00009775161743
+AudioInputI2S            i2sIN;          //xy=182.0002212524414,434.99998712539673
+AudioMixer4              mxWave;         //xy=191.666748046875,322.6667580604553
+AudioEffectFade          fadeR;          //xy=336.3333320617676,459.00007486343384
+AudioEffectFade          fadeL;          //xy=336.6667289733887,413.66669273376465
+AudioMixer4              mxInL;          //xy=521.666748046875,251.0001072883606
+AudioMixer4              mxInR;          //xy=522.666748046875,329.0001072883606
+AudioOutputI2S           i2sOUT;         //xy=710.3333282470703,280.6668019294739
+AudioMixer4              mxFFT;          //xy=713.0000495910645,158.66676950454712
+AudioAnalyzePeak         peakIn;         //xy=877.3333854675293,178.66677331924438
+AudioAnalyzeFFT1024      fft1024_1;      //xy=889.3333854675293,123.66677331924438
+AudioConnection          patchCord1(playSdWav1, 0, mxInL, 0);
+AudioConnection          patchCord2(playSdWav1, 1, mxInR, 0);
+AudioConnection          patchCord3(i2sIN, 0, fadeL, 0);
+AudioConnection          patchCord4(i2sIN, 1, fadeR, 0);
+AudioConnection          patchCord5(mxWave, 0, mxInL, 1);
+AudioConnection          patchCord6(mxWave, 0, mxInR, 1);
+AudioConnection          patchCord7(fadeR, 0, mxInR, 2);
+AudioConnection          patchCord8(fadeL, 0, mxInL, 2);
+AudioConnection          patchCord9(mxInL, 0, mxFFT, 2);
+AudioConnection          patchCord10(mxInL, 0, i2sOUT, 0);
+AudioConnection          patchCord11(mxInR, 0, mxFFT, 3);
+AudioConnection          patchCord12(mxInR, 0, i2sOUT, 1);
+AudioConnection          patchCord13(mxFFT, fft1024_1);
+AudioConnection          patchCord14(mxFFT, peakIn);
+AudioControlSGTL5000     sgtl5000_1;     //xy=517.666748046875,432.0001072883606
 // GUItool: end automatically generated code
+
+//THESE WILL NOT WORK IN THE AUDIO TOOL
+AudioConnection          patchCordmxWave0(wavetable[0], 0, mxWave, 0);
+AudioConnection          patchCordmxWave1(wavetable[1], 0, mxWave, 1);
+AudioConnection          patchCordmxWave2(wavetable[2], 0, mxWave, 2);
+AudioConnection          patchCordmxWave3(wavetable[3], 0, mxWave, 3);
+
 
 /*
  * PlayQueue - to avoid calling audio system during USB event handler
