@@ -286,6 +286,8 @@ int curInstrument = 0;
 #define ACTION_PLAY_WAV_TRANSFORM     12
 #define ACTION_PLAY_WAV_OPTIMUS       13
 #define ACTION_PLAY_WAV_HORN          14
+#define ACTION_PLAY_WAV_NAMEIS        15
+
 
 //#define ACTION_PLAY_NOTE              20
 
@@ -307,7 +309,7 @@ int ActionMap[][3] = {
   //src, key, action
   {SOURCE_KEY, 214, ACTION_CHANGE_COLOR},              //remote right
   {SOURCE_KEY, 211, ACTION_CHANGE_MODE},               //remote left
-  {SOURCE_KEY,  27, ACTION_STOP},                      //remote up
+  {SOURCE_KEY,  27, ACTION_PLAY_WAV_NAMEIS},           //remote up
   {SOURCE_KEY,  98, ACTION_HEADLIGHT_TOGGLE},        //remote down
   {SOURCE_KEY, 198, ACTION_PLAY_WAV_RND},              //remote play
   
@@ -315,8 +317,8 @@ int ActionMap[][3] = {
   {SOURCE_MIDI_NOTE, 32, ACTION_PLAY_WAV_HORN},             //MIDI pad 1 BANK B
   {SOURCE_MIDI_NOTE, 45, ACTION_PLAY_WAV_TRANSFORM},        //MIDI pad 2 BANK A
   {SOURCE_MIDI_NOTE, 33, ACTION_PLAY_WAV_TRANSFORM},        //MIDI pad 2 BANK B
-  {SOURCE_MIDI_NOTE, 46, ACTION_PLAY_WAV_OPTIMUS},          //MIDI pad 3 BANK A
-  {SOURCE_MIDI_NOTE, 34, ACTION_PLAY_WAV_OPTIMUS},          //MIDI pad 3 BANK B
+  {SOURCE_MIDI_NOTE, 46, ACTION_PLAY_WAV_NAMEIS},          //MIDI pad 3 BANK A
+  {SOURCE_MIDI_NOTE, 34, ACTION_PLAY_WAV_NAMEIS},          //MIDI pad 3 BANK B
   {SOURCE_MIDI_NOTE, 47, ACTION_HEADLIGHT_TOGGLE},          //MIDI pad 4 BANK A
   {SOURCE_MIDI_NOTE, 35, ACTION_HEADLIGHT_TOGGLE},          //MIDI pad 4 BANK B
   {SOURCE_MIDI_NOTE, 48, ACTION_PLAY_WAV_RND},              //MIDI pad 5 BANK A + Dashboard (CH3) Left Button
@@ -942,6 +944,7 @@ void processAction (int action, int src, int key, int data) {
     case ACTION_PLAY_WAV_HORN:      actionVideoSelect(5); actionPlayHornWAV(); break;
     case ACTION_PLAY_WAV_TRANSFORM: actionVideoSelect(3); actionPlayWAV("TRANSFRM.WAV"); break;
     case ACTION_PLAY_WAV_OPTIMUS:   actionVideoSelect(2); actionPlayWAV("OPTIMUS.WAV"); break;
+    case ACTION_PLAY_WAV_NAMEIS:   actionVideoSelect(2); actionPlayWAV("MYNAMEIS.WAV"); break;
     
   }
 }
