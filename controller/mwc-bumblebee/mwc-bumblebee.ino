@@ -173,6 +173,7 @@ Metro showMetro = Metro(100);
 Metro fftMetro = Metro(50); 
 Metro chaseMetro = Metro(20); 
 Metro playQueueMetro = Metro(50);
+Metro bgmMetro = Metro(500);
 
 
 #define SHOW_DEFAULT  0
@@ -375,8 +376,8 @@ void setup() {
   //mxOutL.gain(1, 0.0); //granular
   //mxOutR.gain(1, 0.0); //granular
 
-  mxInL.gain(0, .5); //sdwav //the external input is lower, so this is set down to compensate
-  mxInR.gain(0, .5); //sdwav
+  mxInL.gain(0, .3); //sdwav //the external input is lower, so this is set down to compensate
+  mxInR.gain(0, .3); //sdwav
   mxInL.gain(1, 1); //wavetable
   mxInR.gain(1, 1); //wavetable
   mxInL.gain(2, LINE_IN_MONITOR); //i2s in
@@ -477,9 +478,19 @@ void loop() {
     String fn = playQueue;
     if (fn.length() >0) {
       //decrease audio in level during playback
+      fadeL.fadeOut(100);
+      fadeR.fadeOut(100);
       
       playQueue = "";
       playWAV(fn); 
+    }
+  }
+
+  if (bgmMetro.check() == 1) { // check if the metro has passed its interval
+    //check to see if wav is playing, if not restart
+    if (!playSdWav1.isPlaying()) { 
+      fadeL.fadeIn(1000);
+      fadeR.fadeIn(1000);
     }
   }
   
@@ -602,6 +613,54 @@ void OnControlChange(byte channel, byte control, byte value)
      Serial.printf("Control Change, ch=%d, control=%d, value=%d\n",channel, control, value);    
   }
 
+
+
+
+  if((channel == 1) && ( control == 5)) {
+    int instrument = map( value, 0, 127, 0, NUM_INSTRUMENTS - 1);
+    Serial.printf("instrument map - %d\n",instrument);
+    if (instrument == curInstrument) return;
+    curInstrument = instrument;
+    int announce = true;
+    //copied from actionChangeInstrument
+    for (int i = 0; i < TOTAL_VOICES; ++i) {
+
+      switch (instrument) {
+        case 0: wavetable[i].setInstrument(standard_DRUMS); if (i==0 && announce) actionPlayWAV("DRUMS.WAV");   break; //only play audio first time through loop
+        case 1: wavetable[i].setInstrument(piano);          if (i==0 && announce) actionPlayWAV("PIANO.WAV");   break;
+        case 2: wavetable[i].setInstrument(distortiongt);   if (i==0 && announce) actionPlayWAV("GUITAR.WAV");  break;
+        case 3: wavetable[i].setInstrument(trumpet);        if (i==0 && announce) actionPlayWAV("TRUMPET.WAV"); break;
+        case 4: wavetable[i].setInstrument(timpani);        if (i==0 && announce) actionPlayWAV("TIMPANI.WAV"); break;
+    
+      }  
+
+    wavetable[i].amplitude(1);
+    voices[i].wavetable_id = i;
+    voices[i].channel = voices[i].note = 0xFF;
+    
+  }
+  
+  }
+  if((channel == 1) && ( control == 6)) {
+    int note = map( value, 0, 127, 24, 96);
+    
+    freeVoices();
+    int wavetable_id = allocateVoice(channel, note);   
+    wavetable[wavetable_id].playNote(note, 100);
+    delay(10);
+    wavetable[wavetable_id].stop();
+  }
+
+  if((channel == 1) && ( control == 8)) {
+    int color = map( value, 0, 127, 0, NUM_MODE_COLORS - 1);
+    Serial.printf("color - %d\n",color);
+    currentModeColor = color;
+  }
+
+
+
+
+  
 }
 
 
