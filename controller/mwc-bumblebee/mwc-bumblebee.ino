@@ -498,7 +498,7 @@ void loop() {
   }
 
   if (colorChangeMetro.check() == 1) { // check if the metro has passed its interval
-    actionChangeColor();
+    actionChangeColor(false);
   }
   
   debugOptionsCheck();       
@@ -990,7 +990,7 @@ void mapAction(int src, int key, int data) {
 
 void processAction (int action, int src, int key, int data) {
   switch (action) {
-    case ACTION_CHANGE_COLOR:       actionChangeColor(); break;
+    case ACTION_CHANGE_COLOR:       actionChangeColor(true); break;
     case ACTION_CHANGE_SPEED:       actionChangeSpeed(); break;
     case ACTION_CHANGE_MODE:        actionChangeMode(); break;
     case ACTION_CHANGE_INSTRUMENT:  curInstrument++; actionChangeInstrument(true); break;
@@ -1010,12 +1010,12 @@ void processAction (int action, int src, int key, int data) {
 }
 
 
-void actionChangeColor() {
+void actionChangeColor(bool announce) {
   
  currentModeColor++; 
  if (currentModeColor >= NUM_MODE_COLORS) currentModeColor = 0;
 
- if (debugOptions[DEBUG_ACTION]) Serial.printf("actionChangeColor(%s)\n", colorText[currentModeColor]);
+ if (debugOptions[DEBUG_ACTION] && announce) Serial.printf("actionChangeColor(%s)\n", colorText[currentModeColor]);
 
 }
 
