@@ -174,7 +174,7 @@ Metro fftMetro = Metro(50);
 Metro chaseMetro = Metro(20); 
 Metro playQueueMetro = Metro(50);
 Metro bgmMetro = Metro(500);
-
+Metro colorChangeMetro = Metro(10000000);
 
 #define SHOW_DEFAULT  0
 #define SHOW_FLARE    1
@@ -228,8 +228,11 @@ int modeColorHueVals[NUM_MODE_COLORS] = {H_RED, H_YELLOW, H_AQUA, H_PURPLE, H_GR
 //int modeColorHueVals[NUM_MODE_COLORS] = {HUE_YELLOW, HUE_BLUE, HUE_PURPLE, HUE_RED, HUE_GREEN}; 
 int currentModeColor = DEFAULT_MODE_COLOR; //start yellow
 
-int leftHeadlightStatus = 1;
-int rightHeadlightStatus = 1;
+
+
+int leftHeadlightStatus = 0;
+int rightHeadlightStatus = 0;
+
 
 
 //for USB host functions
@@ -493,6 +496,10 @@ void loop() {
       fadeR.fadeIn(1000);
     }
   }
+
+  if (colorChangeMetro.check() == 1) { // check if the metro has passed its interval
+    actionChangeColor();
+  }
   
   debugOptionsCheck();       
 }
@@ -506,7 +513,7 @@ void updateModeShow() {
     //do stuff
     //Serial.println("SHOW:FLARE");
     
-    FastLED.setBrightness (FLARE_BRIGHTNESS);
+    //FastLED.setBrightness (FLARE_BRIGHTNESS);
     fill_solid(hlLEDS,HL_NUM_LEDS, FLARE_COLOR);
     fill_solid(eyeLEDS,EYE_NUM_LEDS, FLARE_COLOR);
     fill_solid(trayLEDS,TRAY_NUM_LEDS, FLARE_COLOR);
@@ -531,7 +538,7 @@ void updateModeShow() {
     analogWrite(GFX_BLUE_PIN, 0);
     
     FastLED.clear();
-    FastLED.setBrightness (DEFAULT_BRIGHTNESS);
+    //FastLED.setBrightness (DEFAULT_BRIGHTNESS);
     FastLED.show();
     currentShow = SHOW_DEFAULT;
     break;
@@ -613,9 +620,27 @@ void OnControlChange(byte channel, byte control, byte value)
      Serial.printf("Control Change, ch=%d, control=%d, value=%d\n",channel, control, value);    
   }
 
+  if((channel == 1) && ( control == 1)) {
+    int color = map( value, 0, 127, 0, NUM_MODE_COLORS - 1);
+    Serial.printf("color - %d\n",color);
+    currentModeColor = color;
+  }
 
+  if((channel == 1) && ( control == 2)) {
+    int metrospeed = map( value, 0, 127, 3000, 50);
+    if (value < 5) metrospeed = 1000000; //is there a way to stop a metro?
+     Serial.printf("color change speed map - %d\n",metrospeed);
+    colorChangeMetro.interval(metrospeed); 
+    colorChangeMetro.reset();
+  }
 
-
+  if((channel == 1) && ( control == 3)) {
+    int brt = map( value, 0, 127, 30, 255);
+     Serial.printf("brightness change map - %d\n",brt);
+    LEDS.setBrightness(brt);
+  }
+  
+  
   if((channel == 1) && ( control == 5)) {
     int instrument = map( value, 0, 127, 0, NUM_INSTRUMENTS - 1);
     Serial.printf("instrument map - %d\n",instrument);
@@ -650,15 +675,6 @@ void OnControlChange(byte channel, byte control, byte value)
     delay(10);
     wavetable[wavetable_id].stop();
   }
-
-  if((channel == 1) && ( control == 8)) {
-    int color = map( value, 0, 127, 0, NUM_MODE_COLORS - 1);
-    Serial.printf("color - %d\n",color);
-    currentModeColor = color;
-  }
-
-
-
 
   
 }
