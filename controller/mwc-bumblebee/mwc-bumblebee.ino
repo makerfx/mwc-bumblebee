@@ -294,8 +294,11 @@ int curInstrument = 0;
  */
 int ActionMap[][3] = {
   //src, key, action
-  {SOURCE_KEY, 214, ACTION_CHANGE_COLOR},              //remote right
-  {SOURCE_KEY, 211, ACTION_CHANGE_MODE},               //remote left
+  //{SOURCE_KEY, 214, ACTION_CHANGE_COLOR},              //remote right
+  //{SOURCE_KEY, 211, ACTION_CHANGE_MODE},               //remote left
+  {SOURCE_KEY, 214, ACTION_PLAY_WAV_HORN},              //remote right
+  {SOURCE_KEY, 211, ACTION_PLAY_WAV_TRANSFORM},               //remote left
+
   {SOURCE_KEY,  27, ACTION_PLAY_WAV_NAMEIS},           //remote up
   {SOURCE_KEY,  98, ACTION_HEADLIGHT_TOGGLE},        //remote down
   {SOURCE_KEY, 198, ACTION_PLAY_WAV_RND},              //remote play
@@ -622,28 +625,36 @@ void OnControlChange(byte channel, byte control, byte value)
 
   if((channel == 1) && ( control == 1)) {
     int color = map( value, 0, 127, 0, NUM_MODE_COLORS - 1);
-    Serial.printf("color - %d\n",color);
+    if (debugOptions[DEBUG_INPUT]) {
+      Serial.printf("color - %d\n",color);
+    }
     currentModeColor = color;
   }
 
   if((channel == 1) && ( control == 2)) {
     int metrospeed = map( value, 0, 127, 3000, 50);
     if (value < 5) metrospeed = 1000000; //is there a way to stop a metro?
-     Serial.printf("color change speed map - %d\n",metrospeed);
+      if (debugOptions[DEBUG_INPUT]) {
+        Serial.printf("color change speed map - %d\n",metrospeed);
+      }
     colorChangeMetro.interval(metrospeed); 
     colorChangeMetro.reset();
   }
 
   if((channel == 1) && ( control == 3)) {
     int brt = map( value, 0, 127, 30, 255);
-     Serial.printf("brightness change map - %d\n",brt);
+      if (debugOptions[DEBUG_INPUT]) {
+        Serial.printf("brightness change map - %d\n",brt);
+      }
     LEDS.setBrightness(brt);
   }
   
   
   if((channel == 1) && ( control == 5)) {
     int instrument = map( value, 0, 127, 0, NUM_INSTRUMENTS - 1);
-    Serial.printf("instrument map - %d\n",instrument);
+    if (debugOptions[DEBUG_INPUT]) {
+      Serial.printf("instrument map - %d\n",instrument);
+    }
     if (instrument == curInstrument) return;
     curInstrument = instrument;
     int announce = true;
