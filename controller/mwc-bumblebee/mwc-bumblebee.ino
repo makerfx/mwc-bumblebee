@@ -401,6 +401,7 @@ void setup() {
   pinMode(GFX_GREEN_PIN, OUTPUT);
   pinMode(GFX_BLUE_PIN, OUTPUT);
 
+/* Reducing current at startup
   int testDelay = 100;
   analogWrite(HL_SPOT_LEFT_PIN, 255);
   delay(testDelay);
@@ -422,7 +423,7 @@ void setup() {
   delay(testDelay);
   analogWrite(GFX_BLUE_PIN, 0);
   
-
+*/
   //Rings like BRG space to be the same as the RGB strip
   //TODO: NEED TO CALIBRATE OTHER RINGS
   LEDS.addLeds<WS2812SERIAL,EYE_DATA_PIN,  BRG>(eyeLEDS,   EYE_NUM_LEDS);
@@ -440,6 +441,14 @@ void setup() {
   blingLEDS[0] = CRGB(255,255,255);
   FastLED.show();
   delay(1000);
+
+  playSdWav1.play("HORN1.WAV");
+
+  delay(2000);
+
+  playSdWav1.play("MYNAMEIS.WAV");
+
+
   
   Serial.println("Setup Complete.");
   printDebugOptions();
