@@ -240,6 +240,7 @@ int rightHeadlightStatus = 0;
 
 USBHost myusb;
 USBHub hub1(myusb);
+USBHIDParser hid1(myusb);
 KeyboardController keyboard1(myusb);
 MIDIDevice midi1(myusb);
 MIDIDevice midi2(myusb);
@@ -362,6 +363,7 @@ void setup() {
   Serial.println("USB Host Setup");
   myusb.begin();
   keyboard1.attachPress(OnPress);
+  keyboard1.attachExtrasPress(OnHIDExtrasPress);
   
   
   midi1.setHandleNoteOff(OnNoteOff);
@@ -583,7 +585,11 @@ void updateModeShow() {
   FastLED.show();
 }
 
-
+/*
+ * Input
+ * OnPress() - this function is called by the USB Host HID event when a key is pressed
+ * 
+ */
 void OnPress(int key)
 {
   if (debugOptions[DEBUG_INPUT]) {
@@ -593,6 +599,18 @@ void OnPress(int key)
   mapAction(SOURCE_KEY, key, 0);
     
 }
+
+/*
+ * Input
+ * OnHIDExtrasPress() - this function is called by the USB Host HID event when a MULTIMEDIA key is pressed
+ * 
+ */
+void OnHIDExtrasPress(uint32_t top, uint16_t key) 
+{
+   OnPress(key);
+}
+
+
 
 void OnNoteOn(byte channel, byte note, byte velocity)
 {
